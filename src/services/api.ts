@@ -21,7 +21,7 @@ class ClimateAPI {
     limit?: number;
     hours?: number;
   } = {}): Promise<ClimateData[]> {
-    if (!this.baseUrl || !SUPABASE_URL || !SUPABASE_ANON_KEY || SUPABASE_URL === 'undefined' || SUPABASE_ANON_KEY === 'undefined') {
+    if (!this.baseUrl || !SUPABASE_URL || !SUPABASE_ANON_KEY) {
       // Return mock data if Supabase is not configured
       console.warn('Supabase not configured. Using mock climate data.');
       return this.getMockClimateData();
@@ -38,9 +38,7 @@ class ClimateAPI {
       });
 
       if (!response.ok) {
-        const errorText = await response.text();
-        console.warn(`Climate API error (${response.status}):`, errorText);
-        return this.getMockClimateData();
+        throw new Error(`HTTP error! status: ${response.status}`);
       }
 
       const data = await response.json();
@@ -52,7 +50,7 @@ class ClimateAPI {
   }
 
   async addClimateData(data: Omit<ClimateData, 'id' | 'timestamp'>): Promise<ClimateData | null> {
-    if (!this.baseUrl || !SUPABASE_URL || !SUPABASE_ANON_KEY || SUPABASE_URL === 'undefined' || SUPABASE_ANON_KEY === 'undefined') {
+    if (!this.baseUrl || !SUPABASE_URL || !SUPABASE_ANON_KEY) {
       console.warn('Cannot add data: Supabase not configured');
       return null;
     }
@@ -72,9 +70,7 @@ class ClimateAPI {
       });
 
       if (!response.ok) {
-        const errorText = await response.text();
-        console.warn(`Add climate data error (${response.status}):`, errorText);
-        return null;
+        throw new Error(`HTTP error! status: ${response.status}`);
       }
 
       const result = await response.json();
@@ -91,7 +87,7 @@ class ClimateAPI {
     limit?: number;
     hours?: number;
   } = {}): Promise<DisasterEvent[]> {
-    if (!this.baseUrl || !SUPABASE_URL || !SUPABASE_ANON_KEY || SUPABASE_URL === 'undefined' || SUPABASE_ANON_KEY === 'undefined') {
+    if (!this.baseUrl || !SUPABASE_URL || !SUPABASE_ANON_KEY) {
       console.warn('Supabase not configured. Using mock disaster data.');
       return this.getMockDisasters();
     }
@@ -108,9 +104,7 @@ class ClimateAPI {
       });
 
       if (!response.ok) {
-        const errorText = await response.text();
-        console.warn(`Disasters API error (${response.status}):`, errorText);
-        return this.getMockDisasters();
+        throw new Error(`HTTP error! status: ${response.status}`);
       }
 
       const data = await response.json();
@@ -122,7 +116,7 @@ class ClimateAPI {
   }
 
   async reportDisaster(data: Omit<DisasterEvent, 'id' | 'timestamp'>): Promise<DisasterEvent | null> {
-    if (!this.baseUrl || !SUPABASE_URL || !SUPABASE_ANON_KEY || SUPABASE_URL === 'undefined' || SUPABASE_ANON_KEY === 'undefined') {
+    if (!this.baseUrl || !SUPABASE_URL || !SUPABASE_ANON_KEY) {
       console.warn('Cannot report disaster: Supabase not configured');
       return null;
     }
@@ -135,9 +129,7 @@ class ClimateAPI {
       });
 
       if (!response.ok) {
-        const errorText = await response.text();
-        console.warn(`Report disaster error (${response.status}):`, errorText);
-        return null;
+        throw new Error(`HTTP error! status: ${response.status}`);
       }
 
       const result = await response.json();
@@ -155,7 +147,7 @@ class ClimateAPI {
     minAqi?: number;
     maxAqi?: number;
   } = {}): Promise<EnvironmentalData[]> {
-    if (!this.baseUrl || !SUPABASE_URL || !SUPABASE_ANON_KEY || SUPABASE_URL === 'undefined' || SUPABASE_ANON_KEY === 'undefined') {
+    if (!this.baseUrl || !SUPABASE_URL || !SUPABASE_ANON_KEY) {
       console.warn('Supabase not configured. Using mock environmental data.');
       return this.getMockEnvironmentalData();
     }
@@ -173,9 +165,7 @@ class ClimateAPI {
       });
 
       if (!response.ok) {
-        const errorText = await response.text();
-        console.warn(`Environmental API error (${response.status}):`, errorText);
-        return this.getMockEnvironmentalData();
+        throw new Error(`HTTP error! status: ${response.status}`);
       }
 
       const data = await response.json();
@@ -187,7 +177,7 @@ class ClimateAPI {
   }
 
   async addEnvironmentalData(data: Omit<EnvironmentalData, 'id' | 'timestamp'>): Promise<EnvironmentalData | null> {
-    if (!this.baseUrl || !SUPABASE_URL || !SUPABASE_ANON_KEY || SUPABASE_URL === 'undefined' || SUPABASE_ANON_KEY === 'undefined') {
+    if (!this.baseUrl || !SUPABASE_URL || !SUPABASE_ANON_KEY) {
       console.warn('Cannot add data: Supabase not configured');
       return null;
     }
@@ -207,9 +197,7 @@ class ClimateAPI {
       });
 
       if (!response.ok) {
-        const errorText = await response.text();
-        console.warn(`Add environmental data error (${response.status}):`, errorText);
-        return null;
+        throw new Error(`HTTP error! status: ${response.status}`);
       }
 
       const result = await response.json();
@@ -221,7 +209,7 @@ class ClimateAPI {
   }
 
   async seedDatabase(): Promise<boolean> {
-    if (!this.baseUrl || !SUPABASE_URL || !SUPABASE_ANON_KEY || SUPABASE_URL === 'undefined' || SUPABASE_ANON_KEY === 'undefined') {
+    if (!this.baseUrl || !SUPABASE_URL || !SUPABASE_ANON_KEY) {
       console.warn('Cannot seed database: Supabase not configured');
       return false;
     }
@@ -240,7 +228,7 @@ class ClimateAPI {
   }
 
   async getApiStatus(): Promise<any> {
-    if (!this.baseUrl || !SUPABASE_URL || !SUPABASE_ANON_KEY || SUPABASE_URL === 'undefined' || SUPABASE_ANON_KEY === 'undefined') {
+    if (!this.baseUrl || !SUPABASE_URL || !SUPABASE_ANON_KEY) {
       return { status: 'Supabase not configured', usingMockData: true };
     }
 
@@ -250,15 +238,13 @@ class ClimateAPI {
       });
 
       if (!response.ok) {
-        const errorText = await response.text();
-        console.warn(`API status error (${response.status}):`, errorText);
-        return { status: 'API unavailable', error: errorText, usingMockData: true };
+        throw new Error(`HTTP error! status: ${response.status}`);
       }
 
       return await response.json();
     } catch (error) {
       console.error('Error getting API status:', error);
-      return { status: 'API unavailable', error: error.message, usingMockData: true };
+      return { status: 'API unavailable', error: error.message };
     }
   }
 
