@@ -51,9 +51,7 @@ Climate change is one of the most pressing challenges of our time, yet the vast 
 
 ---
 
-**Made with ❤️ by the Nexbit team**  
+**Made with ❤️ by Team NEXBIT**  
 *Empowering climate action through data visualization*
-
-[![Back to Top](https://img.shields.io/badge/Back%20to%20Top-↑-blue?style=flat-square)](#-geostorm-)
 
 </div>
