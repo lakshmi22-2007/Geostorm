@@ -42,19 +42,6 @@ Climate change is one of the most pressing challenges of our time, yet the vast 
 
 ---
 
-## 📊 **Project Metrics**
-
-<div align="center">
-
-![GitHub Issues](https://img.shields.io/github/issues/Nexbit/GEOSTORM?style=flat-square)
-![GitHub Pull Requests](https://img.shields.io/github/issues-pr/Nexbit/GEOSTORM?style=flat-square)
-![GitHub Last Commit](https://img.shields.io/github/last-commit/Nexbit/GEOSTORM?style=flat-square)
-![GitHub Repo Size](https://img.shields.io/github/repo-size/Nexbit/GEOSTORM?style=flat-square)
-
-</div>
-
----
-
 
 <div align="center">
 
