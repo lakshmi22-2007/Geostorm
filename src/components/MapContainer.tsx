@@ -36,13 +36,34 @@ const MapContainer: React.FC<MapContainerProps> = ({
     }
   };
 
-  const getMarkerColor = () => {
+  const getMarkerColor = (item?: any) => {
     switch (dataType) {
       case 'temperature':
+        if (item && item.temperature) {
+          // Gradient from blue (cold) to red (hot)
+          if (item.temperature < 0) return '#3b82f6'; // Blue for very cold
+          if (item.temperature < 10) return '#06b6d4'; // Cyan for cold
+          if (item.temperature < 20) return '#10b981'; // Green for mild
+          if (item.temperature < 30) return '#f59e0b'; // Orange for warm
+          return '#ef4444'; // Red for hot
+        }
         return '#ef4444';
       case 'disasters':
+        if (item && item.severity) {
+          if (item.severity === 'High') return '#dc2626'; // Dark red for high
+          if (item.severity === 'Medium') return '#f59e0b'; // Orange for medium
+          return '#fbbf24'; // Yellow for low
+        }
         return '#f59e0b';
       case 'environmental':
+        if (item && item.airQuality) {
+          // AQI color coding
+          if (item.airQuality <= 50) return '#10b981'; // Green - Good
+          if (item.airQuality <= 100) return '#f59e0b'; // Yellow - Moderate
+          if (item.airQuality <= 150) return '#f97316'; // Orange - Unhealthy for sensitive
+          if (item.airQuality <= 200) return '#ef4444'; // Red - Unhealthy
+          return '#7c2d12'; // Dark red - Hazardous
+        }
         return '#10b981';
       default:
         return '#3b82f6';
@@ -52,11 +73,11 @@ const MapContainer: React.FC<MapContainerProps> = ({
   const getConnectionColor = () => {
     switch (dataType) {
       case 'temperature':
-        return 'rgba(239, 68, 68, 0.4)';
+        return 'rgba(99, 102, 241, 0.6)'; // Purple-blue for temperature connections
       case 'disasters':
-        return 'rgba(245, 158, 11, 0.4)';
+        return 'rgba(239, 68, 68, 0.7)'; // Stronger red for disaster connections
       case 'environmental':
-        return 'rgba(16, 185, 129, 0.4)';
+        return 'rgba(34, 197, 94, 0.6)'; // Brighter green for environmental connections
       default:
         return 'rgba(59, 130, 246, 0.4)';
     }
@@ -176,12 +197,12 @@ const MapContainer: React.FC<MapContainerProps> = ({
 
   const renderMarkers = () => {
     const data = getCurrentData();
-    const markerColor = getMarkerColor();
 
     return data.map((item, index) => {
       const position = getMarkerPosition(item.lat, item.lng);
       const intensity = getMarkerIntensity(item);
       const size = 4 + intensity * 6; // Size based on data intensity
+      const markerColor = getMarkerColor(item); // Get color based on item data
       
       return (
         <motion.div
@@ -290,48 +311,53 @@ const MapContainer: React.FC<MapContainerProps> = ({
     });
   };
 
+  const getMapBackground = () => {
+    switch (dataType) {
+      case 'temperature':
+        return 'bg-gradient-to-br from-blue-950 via-indigo-900 to-purple-900';
+      case 'disasters':
+        return 'bg-gradient-to-br from-red-950 via-orange-900 to-yellow-900';
+      case 'environmental':
+        return 'bg-gradient-to-br from-green-950 via-emerald-900 to-teal-900';
+      default:
+        return 'bg-gradient-to-br from-slate-900 via-blue-900 to-indigo-900';
+    }
+  };
+
   return (
-    <div className="relative w-full h-full bg-gradient-to-br from-slate-900 via-blue-900 to-indigo-900">
+    <div className={`relative w-full h-full ${getMapBackground()}`}>
       {/* Enhanced Controls */}
-      <div className="absolute top-4 left-4 z-40 flex flex-col gap-3">
-        <div className="flex gap-3">
-          <motion.button
-            onClick={() => setShowConnections(!showConnections)}
-            className={`px-4 py-2 rounded-lg text-sm font-medium transition-all backdrop-blur-md border ${
-              showConnections 
-                ? 'bg-blue-600/90 text-white border-blue-500' 
-                : 'bg-gray-800/90 text-gray-300 hover:bg-gray-700/90 border-gray-600'
-            }`}
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-          >
-            {showConnections ? 'Hide Connections' : 'Show Connections'}
-          </motion.button>
-          
-          <motion.button
-            onClick={() => setShowHeatmap(!showHeatmap)}
-            className={`px-4 py-2 rounded-lg text-sm font-medium transition-all backdrop-blur-md border ${
-              showHeatmap 
-                ? 'bg-red-600/90 text-white border-red-500' 
-                : 'bg-gray-800/90 text-gray-300 hover:bg-gray-700/90 border-gray-600'
-            }`}
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-          >
-            {showHeatmap ? 'Hide Heatmap' : 'Show Heatmap'}
-          </motion.button>
+      <div className="absolute top-4 right-4 z-40 flex gap-3">
+        <div className="px-3 py-2 bg-gray-900/90 backdrop-blur-md rounded-lg border border-gray-600 text-sm text-gray-300 flex items-center gap-2">
+          <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+          <span>Real-time</span>
         </div>
         
-        <div className="flex gap-3">
-          <div className="px-3 py-2 bg-gray-900/90 backdrop-blur-md rounded-lg border border-gray-600 text-sm text-gray-300">
-            <span className="font-medium">{getCurrentData().length}</span> data points
-          </div>
-          
-          <div className="px-3 py-2 bg-gray-900/90 backdrop-blur-md rounded-lg border border-gray-600 text-sm text-gray-300 flex items-center gap-2">
-            <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
-            <span>Real-time</span>
-          </div>
-        </div>
+        <motion.button
+          onClick={() => setShowConnections(!showConnections)}
+          className={`px-4 py-2 rounded-lg text-sm font-medium transition-all backdrop-blur-md border ${
+            showConnections 
+              ? 'bg-blue-600/90 text-white border-blue-500' 
+              : 'bg-gray-800/90 text-gray-300 hover:bg-gray-700/90 border-gray-600'
+          }`}
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+        >
+          {showConnections ? 'Hide Connections' : 'Show Connections'}
+        </motion.button>
+        
+        <motion.button
+          onClick={() => setShowHeatmap(!showHeatmap)}
+          className={`px-4 py-2 rounded-lg text-sm font-medium transition-all backdrop-blur-md border ${
+            showHeatmap 
+              ? 'bg-red-600/90 text-white border-red-500' 
+              : 'bg-gray-800/90 text-gray-300 hover:bg-gray-700/90 border-gray-600'
+          }`}
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+        >
+          {showHeatmap ? 'Hide Heatmap' : 'Show Heatmap'}
+        </motion.button>
       </div>
 
       {/* World Map with Real-time Coloring */}
@@ -351,59 +377,86 @@ const MapContainer: React.FC<MapContainerProps> = ({
       </div>
 
       {/* Enhanced Legend with Color Coding */}
-      <div className="absolute bottom-4 left-4 bg-gray-900/95 backdrop-blur-md rounded-xl p-4 border border-gray-700 z-40 max-w-sm">
-        <h3 className="text-sm font-bold text-white mb-3 flex items-center gap-2">
-          <div className={`w-3 h-3 rounded-full`} style={{ backgroundColor: getMarkerColor() }}></div>
-          Real-time {dataType.charAt(0).toUpperCase() + dataType.slice(1)} Data
+      <div className="absolute bottom-4 right-4 bg-gray-900/95 backdrop-blur-md rounded-lg p-2 border border-gray-700 z-40 max-w-xs">
+        <h3 className="text-xs font-bold text-white mb-2 flex items-center gap-1">
+          <div className={`w-2 h-2 rounded-full`} style={{ backgroundColor: getMarkerColor() }}></div>
+          {dataType.charAt(0).toUpperCase() + dataType.slice(1)}
         </h3>
         
-        <div className="text-xs text-gray-300 space-y-2">
+        <div className="text-xs text-gray-300 space-y-1">
           {dataType === 'temperature' && (
             <>
-              <div className="flex items-center gap-2">
-                <div className="w-3 h-3 bg-blue-500 rounded"></div>
-                <span>Cold regions (Blue)</span>
+              <div className="space-y-0.5">
+                <div className="flex items-center gap-1">
+                  <div className="w-2 h-2 bg-blue-500 rounded"></div>
+                  <span className="text-xs">Very Cold</span>
+                </div>
+                <div className="flex items-center gap-1">
+                  <div className="w-2 h-2 bg-cyan-400 rounded"></div>
+                  <span className="text-xs">Cold</span>
+                </div>
+                <div className="flex items-center gap-1">
+                  <div className="w-2 h-2 bg-green-500 rounded"></div>
+                  <span className="text-xs">Mild</span>
+                </div>
+                <div className="flex items-center gap-1">
+                  <div className="w-2 h-2 bg-orange-500 rounded"></div>
+                  <span className="text-xs">Warm</span>
+                </div>
+                <div className="flex items-center gap-1">
+                  <div className="w-2 h-2 bg-red-500 rounded"></div>
+                  <span className="text-xs">Hot</span>
+                </div>
               </div>
-              <div className="flex items-center gap-2">
-                <div className="w-3 h-3 bg-red-500 rounded"></div>
-                <span>Hot regions (Red)</span>
-              </div>
-              <p className="text-gray-400 text-xs">• Connections: Nearby locations or temperature differences {'>'}15°C</p>
             </>
           )}
           
           {dataType === 'disasters' && (
             <>
-              <div className="flex items-center gap-2">
-                <div className="w-3 h-3 bg-green-500 rounded"></div>
-                <span>Safe regions (Green)</span>
+              <div className="space-y-0.5">
+                <div className="flex items-center gap-1">
+                  <div className="w-2 h-2 bg-yellow-400 rounded"></div>
+                  <span className="text-xs">Low</span>
+                </div>
+                <div className="flex items-center gap-1">
+                  <div className="w-2 h-2 bg-orange-500 rounded"></div>
+                  <span className="text-xs">Medium</span>
+                </div>
+                <div className="flex items-center gap-1">
+                  <div className="w-2 h-2 bg-red-600 rounded"></div>
+                  <span className="text-xs">High</span>
+                </div>
               </div>
-              <div className="flex items-center gap-2">
-                <div className="w-3 h-3 bg-red-500 rounded"></div>
-                <span>High-risk areas (Red)</span>
-              </div>
-              <p className="text-gray-400 text-xs">• Connections: Same disaster types or high severity events</p>
             </>
           )}
           
           {dataType === 'environmental' && (
             <>
-              <div className="flex items-center gap-2">
-                <div className="w-3 h-3 bg-green-500 rounded"></div>
-                <span>Clean air (Green)</span>
+              <div className="space-y-0.5">
+                <div className="flex items-center gap-1">
+                  <div className="w-2 h-2 bg-green-500 rounded"></div>
+                  <span className="text-xs">Good</span>
+                </div>
+                <div className="flex items-center gap-1">
+                  <div className="w-2 h-2 bg-yellow-500 rounded"></div>
+                  <span className="text-xs">Moderate</span>
+                </div>
+                <div className="flex items-center gap-1">
+                  <div className="w-2 h-2 bg-orange-500 rounded"></div>
+                  <span className="text-xs">Unhealthy</span>
+                </div>
+                <div className="flex items-center gap-1">
+                  <div className="w-2 h-2 bg-red-500 rounded"></div>
+                  <span className="text-xs">Very Bad</span>
+                </div>
+                <div className="flex items-center gap-1">
+                  <div className="w-2 h-2 bg-red-800 rounded"></div>
+                  <span className="text-xs">Hazardous</span>
+                </div>
               </div>
-              <div className="flex items-center gap-2">
-                <div className="w-3 h-3 bg-red-500 rounded"></div>
-                <span>Polluted areas (Red/Brown)</span>
-              </div>
-              <p className="text-gray-400 text-xs">• Connections: Similar air quality or nearby stations</p>
             </>
           )}
-          
-          <div className="pt-2 border-t border-gray-600">
-            <p className="text-gray-400">Marker size indicates data intensity</p>
-            <p className="text-gray-400">Click markers for detailed information</p>
-          </div>
+
         </div>
       </div>
 

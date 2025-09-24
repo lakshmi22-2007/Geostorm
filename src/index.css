@@ -1,3 +1,33 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* Custom Scrollbar Styling */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #1f2937; /* Dark gray track */
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #3b82f6; /* Blue scrollbar thumb */
+  border-radius: 4px;
+  border: 1px solid #1f2937;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #2563eb; /* Darker blue on hover */
+}
+
+::-webkit-scrollbar-thumb:active {
+  background: #1d4ed8; /* Even darker blue when clicked */
+}
+
+/* Firefox scrollbar styling */
+html {
+  scrollbar-width: thin;
+  scrollbar-color: #3b82f6 #1f2937;
+}

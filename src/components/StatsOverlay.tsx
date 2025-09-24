@@ -88,27 +88,24 @@ const StatsOverlay: React.FC<StatsOverlayProps> = ({
 
   return (
     <>
-      <div className="fixed top-20 right-6 space-y-4 z-30">
+      <div className="fixed top-32 left-4 space-y-2 z-30">
         {stats.map((stat, index) => (
           <motion.div
             key={index}
-            className={`${stat.bgColor} backdrop-blur-md rounded-lg p-4 border border-gray-600 min-w-[200px] cursor-pointer hover:scale-105 transition-transform`}
+            className={`${stat.bgColor} backdrop-blur-md rounded-md p-2 border border-gray-600/50 min-w-[140px] cursor-pointer hover:scale-102 transition-all shadow-sm`}
             initial={{ opacity: 0, x: 100 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: index * 0.2 }}
             onClick={() => handleStatClick(stat)}
           >
-            <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-3">
-                <stat.icon className={`w-6 h-6 ${stat.color}`} />
-                <div>
-                  <p className="text-sm text-gray-300">{stat.label}</p>
-                  <p className={`text-xl font-bold ${stat.color}`}>{stat.value}</p>
-                </div>
+            <div className="flex items-center space-x-2">
+              <stat.icon className={`w-4 h-4 ${stat.color}`} />
+              <div className="flex-1">
+                <p className="text-xs text-gray-400">{stat.label}</p>
+                <p className={`text-lg font-bold ${stat.color}`}>{stat.value}</p>
               </div>
-              <Info className="w-4 h-4 text-gray-400" />
+              <Info className="w-3 h-3 text-gray-500 opacity-60" />
             </div>
-            <p className="text-xs text-gray-400 mt-2">Click for details</p>
           </motion.div>
         ))}
       </div>

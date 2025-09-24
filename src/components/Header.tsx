@@ -17,7 +17,7 @@ const Header: React.FC<HeaderProps> = ({ selectedDataType, onDataTypeChange, onM
 
   return (
     <motion.header 
-      className="fixed top-0 left-0 right-0 z-50 bg-gray-900/80 backdrop-blur-md border-b border-gray-700"
+      className="fixed top-[32px] left-0 right-0 z-50 bg-gray-900/80 backdrop-blur-md border-b border-gray-700"
       initial={{ y: -100 }}
       animate={{ y: 0 }}
       transition={{ duration: 0.6 }}
@@ -46,7 +46,7 @@ const Header: React.FC<HeaderProps> = ({ selectedDataType, onDataTypeChange, onM
             return (
               <motion.button
                 key={type.key}
-                onClick={() => onDataTypeChange(type.key as any)}
+                onClick={() => onDataTypeChange(type.key as 'temperature' | 'disasters' | 'environmental')}
                 className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition-all ${
                   selectedDataType === type.key 
                     ? 'bg-blue-600 text-white' 
